@@ -1,0 +1,26 @@
+{
+	"folders": [
+		{
+			"path": "UserService/UserService"
+		},
+		{
+			"path": "Hotelservice/Hotelservice"
+		},
+		{
+			"path": "RatingService/RatingService"
+		},
+		{
+			"path": "ServiceRegistry/ServiceRegistry"
+		},
+		{
+			"path": "Gateway/Gateway"
+		},
+		{
+			"path": "Config-Server/Config-Server"
+		}
+	],
+	"settings": {
+		"java.compile.nullAnalysis.mode": "automatic",
+		"java.configuration.updateBuildConfiguration": "automatic"
+	}
+}

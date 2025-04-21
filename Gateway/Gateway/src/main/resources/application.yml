@@ -1,0 +1,30 @@
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+server:
+  port: 8084
+spring:
+  application:
+    name: Gateway
+  cloud:
+    gateway:
+      routes:
+      - id: User Service # name to identiyf
+        uri: lb://USERSERVICE  #as lb is loadbalance and its taking uri from service eureka registry
+        predicates:
+        - Path=/users/** #for predictiong anything matching to this
+
+      - id: Hotel Service # name to identiyf
+        uri: lb://HOTELSERVICE  #as lb is loadbalance and its taking uri from service eureka registry
+        predicates:
+        - Path=/hotels/**,/staffs/**  #for predictiong anything matching to this  
+                #/** can also be used for multiple uris here i used ,
+      - id: Rating Service # name to identiyf
+        uri: lb://RATINGSERVICE  #as lb is loadbalance and its taking uri from service eureka registry
+        predicates:
+        - Path=/ratings/** #for predictiong anything matching to this  
