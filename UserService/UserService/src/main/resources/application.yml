@@ -1,0 +1,69 @@
+spring:
+  config:
+    import: configserver:http://localhost:8085
+  #spring.config.import= configserver:http://localhost:8085
+  datasource:
+    url: jdbc:mysql://localhost:3306/microservicesuserservice
+    username: root
+    password: Pass@123
+    
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  
+server:
+  port: 8081
+
+
+# eureka:
+#   instance:
+#     prefer-ip-address: true
+#   client:
+#     fetch-registry: true
+#     register-with-eureka: true
+#     service-url:
+#       defaultZone: http://localhost:8761/eureka
+
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+#below for health monitoring
+  endpoints:
+    web:
+      exposure:
+        include: health  # we can use  info, metrics or  * for all stats
+  endpoint:
+    health:
+      show-details: always
+#below for resiliance4j implementation
+resilience4j:
+  circuitbreaker:
+    instances:
+      ratingHotelBreaker:    #name of circuit breaker
+        registerHealthIndicator: true
+        eventConsumerBufferSize: 10
+        slidingWindowSize: 10
+        slidingWindowType: COUNT_BASED
+        minimumNumberOfCalls: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        failureRateThreshold: 50
+        waitDurationInOpenState: 6s
+        permittedNumberOfCallsInHalfOpenState: 3
+  #for retry
+  retry: 
+    instances: 
+      ratingHotelRetry: 
+        maxAttempts: 3  # Maximum number of attempts 
+        waitDuration: 3s  # Wait duration between attempts recommended 2s
+  #for ratelimiter
+  ratelimiter:
+    instances: 
+      ratingHotelRateLimiter:
+        timeoutDuration: 2s
+        limitRefreshPeriod: 4s
+        limitForPeriod: 2 
+#jwt
+jwt:
+  secret: 8f61fd798510d41707387bbcf15f576af5173b274905bf850d2ed639ed2f24e7
