@@ -17,7 +17,7 @@ spring:
       - id: User Service # name to identiyf
         uri: lb://USERSERVICE  #as lb is loadbalance and its taking uri from service eureka registry
         predicates:
-        - Path=/users/** #for predictiong anything matching to this
+        - Path=/users/** ,/auth/** #for predictiong anything matching to this auth is for jwt
 
       - id: Hotel Service # name to identiyf
         uri: lb://HOTELSERVICE  #as lb is loadbalance and its taking uri from service eureka registry
@@ -28,3 +28,6 @@ spring:
         uri: lb://RATINGSERVICE  #as lb is loadbalance and its taking uri from service eureka registry
         predicates:
         - Path=/ratings/** #for predictiong anything matching to this  
+#jwt
+jwt:
+  secret: 8f61fd798510d41707387bbcf15f576af5173b274905bf850d2ed639ed2f24e7

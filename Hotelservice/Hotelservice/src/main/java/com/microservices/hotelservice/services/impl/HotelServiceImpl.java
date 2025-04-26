@@ -38,7 +38,6 @@ public class HotelServiceImpl implements HotelService {
 
     @Override
     public Hotel updateHotel(Hotel hotel) {
-        // TODO Auto-generated method stub
         return null;
     }
 
