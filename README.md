@@ -1,266 +1,149 @@
-# Microservices
+# Hotel Booking Microservices Platform – Java Spring Boot
 
-A sample microservices reference repository. This README provides an overview, developer quick start, deployment and testing guidance, and contribution guidelines. Customize the sections below to reflect the actual services, tech stack, and commands used in this repository.
+A **distributed microservices-based backend platform** built using **Java, Spring Boot, and Spring Cloud**, demonstrating real-world backend architecture patterns such as **service discovery, API gateway routing, authentication, fault tolerance, and polyglot persistence**.
 
-> NOTE: This is a template / starting point. Replace placeholders (SERVICE_NAME, runtimes, ports, env var examples, CI commands, etc.) with values that match the code in this repo.
-
----
-
-## Table of Contents
-
-- [Project](#project)
-- [Architecture](#architecture)
-- [Services](#services)
-- [Tech stack](#tech-stack)
-- [Prerequisites](#prerequisites)
-- [Environment variables](#environment-variables)
-- [Local development](#local-development)
-  - [Run a single service](#run-a-single-service)
-  - [Run all services (Docker Compose)](#run-all-services-docker-compose)
-- [Testing](#testing)
-- [Deployment](#deployment)
-  - [Docker / Docker Hub](#docker--docker-hub)
-  - [Kubernetes](#kubernetes)
-- [Observability](#observability)
-- [CI / CD](#ci--cd)
-- [Contributing](#contributing)
-- [License](#license)
-- [Support / Contact](#support--contact)
+This project focuses on **scalability, resilience, and loose coupling**, similar to production-grade systems used in banking and product-based environments.
 
 ---
 
-## Project
+## Architecture Overview
 
-Microservices is a minimal / example microservices architecture demonstrating best practices for decomposition, communication, configuration, and deployment. This repository contains multiple services that collaborate to implement a domain (replace this with the actual domain, e.g., "e-commerce", "task manager", etc.).
+The system follows a modular microservices architecture where each service is independently deployable and owns its own data.
 
-Use this repo as a starting point for learning, prototyping, or bootstrapping microservice projects.
+### Core Components
 
----
+* **Service Registry (Eureka)**
+  Enables dynamic service discovery and load-balanced inter-service communication.
 
-## Architecture
+* **Config Server**
+  Centralized configuration management for all microservices.
 
-High-level architecture:
+* **API Gateway (Spring Cloud Gateway)**
+  Acts as a single entry point for clients, handling:
 
-- Each service is a small, single-responsibility application (HTTP API, worker, or event consumer).
-- Services communicate via REST/gRPC and/or asynchronous messaging (Kafka/RabbitMQ).
-- Shared concerns (auth, config, discovery, tracing) are solved with dedicated components and libraries.
-- Deployments are containerized and orchestrated (Docker Compose for local, Kubernetes for production).
+  * Request routing
+  * JWT authentication
+  * Rate limiting
+  * Cross-cutting concerns
 
-(If you have a diagram, include it here — e.g., `docs/architecture.png`.)
+* **User Service**
+  Manages user information and authentication logic.
 
----
+* **Hotel Service**
+  Handles hotel-related data and business logic.
 
-## Services
+* **Rating Service**
+  Manages hotel ratings and reviews.
 
-List the services included in the repo and a one-line description for each. Example:
-
-- auth-service — Authentication and user management API (port 4000)
-- api-gateway — Public gateway and request routing (port 3000)
-- orders-service — Orders domain service (port 5000)
-- inventory-service — Inventory management (port 5100)
-- worker — Background job worker for async processing
-
-Replace the example names above with the actual service directories and descriptions present in this repo.
+Each service communicates using **REST APIs** and is registered with Eureka for discovery.
 
 ---
 
-## Tech stack
+## Security
 
-Specify the primary languages, frameworks, and third-party components used. Example:
-
-- Languages: Node.js / TypeScript, Java / Spring Boot, Python / FastAPI
-- API: REST + OpenAPI, (optionally) gRPC
-- Messaging: Kafka / RabbitMQ
-- DBs: PostgreSQL, Redis
-- Containers: Docker
-- Orchestration: Docker Compose (local), Kubernetes (production)
-- Observability: Prometheus, Grafana, Jaeger, ELK/EFK
-
-Adjust the list to match the repository.
+* Implemented **JWT-based authentication and authorization**.
+* Tokens are validated at the **API Gateway** before forwarding requests to downstream services.
+* Role-based access control enforced at service level.
 
 ---
 
-## Prerequisites
+## Resilience & Fault Tolerance
 
-Install the tools required to run and develop the project:
+To prevent cascading failures in a distributed system, the following patterns are implemented using **Resilience4j**:
 
-- git
-- Docker (Engine & Compose)
-- Node.js / npm or other language runtimes used by the services (if running services locally without containers)
-- kubectl and a Kubernetes cluster (for K8s instructions)
-- (Optional) local credential manager (direnv / dotenv) or a secrets manager
+* **Circuit Breaker** – Stops repeated calls to failing services
+* **Rate Limiter** – Controls request throughput to protect services
+* **Fallback mechanisms** – Graceful degradation during service failures
 
----
-
-## Environment variables
-
-Each service expects environment variables. Create `.env` or `service/.env` files from provided examples:
-
-- .env.example (root) — common environment values
-- services/<service>/env.example — service-specific environment variables
-
-Typical vars:
-- DATABASE_URL=postgres://user:pass@host:5432/db
-- REDIS_URL=redis://localhost:6379
-- SERVICE_PORT=5000
-- JWT_SECRET=changeme
-
-Never commit secrets to the repository.
+These patterns improve overall system stability and reliability.
 
 ---
 
-## Local development
+## Databases (Polyglot Persistence)
 
-Clone the repo:
+Each microservice owns its own database to ensure loose coupling:
 
-```bash
-git clone https://github.com/beastking21/Microservices.git
-cd Microservices
-```
+* **User Service** – MySQL
+* **Hotel Service** – PostgreSQL
+* **Rating Service** – MongoDB
 
-### Run a single service
-
-Many services include a README in their subdirectory. Example for a Node service:
-
-```bash
-cd services/api-gateway
-cp .env.example .env
-npm install
-npm run dev
-# or
-docker build -t api-gateway:dev .
-docker run --env-file .env -p 3000:3000 api-gateway:dev
-```
-
-### Run all services (Docker Compose)
-
-Start all services (recommended for local integration testing):
-
-```bash
-# from repo root
-docker-compose -f docker-compose.dev.yml up --build
-```
-
-Bring down:
-
-```bash
-docker-compose -f docker-compose.dev.yml down
-```
-
-If there is a Makefile, the repo may provide shortcuts:
-
-```bash
-make up
-make down
-```
+This design allows choosing the right database based on data access patterns and scalability needs.
 
 ---
 
-## Testing
+## Tech Stack
 
-Unit and integration test examples:
-
-- Unit tests:
-
-```bash
-# inside a service directory
-npm test
-# or
-./gradlew test
-```
-
-- Integration tests (runs services and tests interactions):
-
-```bash
-docker-compose -f docker-compose.test.yml up --build --exit-code-from test-runner
-```
-
-Add service-specific test instructions to each service README.
+* **Language:** Java
+* **Frameworks:** Spring Boot, Spring Cloud
+* **Service Discovery:** Eureka
+* **API Gateway:** Spring Cloud Gateway
+* **Security:** JWT
+* **Resilience:** Resilience4j (Circuit Breaker, Rate Limiter)
+* **Databases:** MySQL, PostgreSQL, MongoDB
+* **Build Tool:** Maven
+* **Testing:** Postman (API testing)
 
 ---
 
-## Deployment
+## How to Run (Local)
 
-### Docker / Docker Hub
+### Prerequisites
 
-Build images for each service:
+* JDK 17+
+* Maven
+* MySQL, PostgreSQL, MongoDB running locally
 
-```bash
-docker build -t <registry>/<project>/api-gateway:latest ./services/api-gateway
-docker push <registry>/<project>/api-gateway:latest
-# repeat for other services
-```
+### Steps
 
-Add CI jobs in your pipeline to build and push images on merge to main/master.
+1. Clone the repository
 
-### Kubernetes
+   ```bash
+   git clone https://github.com/beastking21/Microservices.git
+   ```
 
-Manifests live in `k8s/` (if present). Example apply:
+2. Start Config Server
 
-```bash
-kubectl apply -f k8s/namespace.yaml
-kubectl apply -f k8s/configmaps.yaml
-kubectl apply -f k8s/secrets.yaml
-kubectl apply -f k8s/deployments/
-kubectl apply -f k8s/services/
-```
+   ```bash
+   cd Config-Server
+   mvn spring-boot:run
+   ```
 
-Consider Helm charts for templating and easier deployment.
+3. Start Service Registry
 
----
+   ```bash
+   cd ServiceRegistry
+   mvn spring-boot:run
+   ```
 
-## Observability
+4. Start API Gateway and individual services
 
-Suggested setup:
+   ```bash
+   mvn spring-boot:run
+   ```
 
-- Metrics: Prometheus scraping service `/metrics` endpoints
-- Tracing: Jaeger / Zipkin instrumentation
-- Logs: stdout structured json, collected by Fluentd/Logstash to Elasticsearch or a hosted provider
-- Alerts: Alertmanager or hosted alerts
-
-Include instrumentation libraries in each service to emit traces, spans, and metrics.
+5. Test APIs using Postman via Gateway endpoints
 
 ---
 
-## CI / CD
+## Key Learnings
 
-Add pipeline examples to `.github/workflows/` (GitHub Actions), `.gitlab-ci.yml`, or your CI provider:
-
-- Build & test per-service
-- Build container images and push to registry
-- Deploy to staging, run smoke tests
-- Promote to production
-
-Example high-level GitHub Actions flow: `ci.yml` runs tests and builds images, `cd.yml` deploys to k8s via a gated workflow.
+* Designing and decomposing systems into independent microservices
+* Implementing centralized routing and authentication
+* Applying resilience patterns in distributed systems
+* Managing multiple databases across services
+* Understanding real-world backend scalability challenges
 
 ---
 
-## Contributing
+## Future Improvements
 
-We welcome contributions:
-
-1. Fork the repo and create a branch: `feature/my-feature`
-2. Add tests for new behavior
-3. Keep changes small and focused
-4. Open a PR and describe the change
-5. Ensure CI passes
-
-Add a CONTRIBUTING.md for repository-specific guidelines and code style.
+* Docker and Docker Compose support
+* Kubernetes deployment
+* Centralized monitoring (Prometheus/Grafana)
+* Distributed tracing (Zipkin)
 
 ---
 
-## License
+## Repository
 
-Specify the project license (e.g., MIT, Apache-2.0) and add a LICENSE file.
-
-Example:
-This repository is licensed under the MIT License. See LICENSE for details.
-
----
-
-## Support / Contact
-
-For questions, open an issue or contact the maintainers:
-
-- Maintainer: beastking21
-- Repository: https://github.com/beastking21/Microservices
+[https://github.com/beastking21/Microservices](https://github.com/beastking21/Microservices)
